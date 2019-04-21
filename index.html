@@ -1,0 +1,98 @@
+<html lang="en">
+
+<head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+   <title>Jobinja in Maps</title>
+   <link rel="stylesheet" href="static/css/bootstrap.min.css">
+   <link rel="stylesheet" href="static/css/bootstrap-rtl.css">
+   <link rel="stylesheet" href="static/css/leaflet.css">
+   <link rel="stylesheet" href="static/css/MarkerCluster.css">
+   <link rel="stylesheet" href="static/css/MarkerCluster.Default.css">
+   <link rel="stylesheet" href="static/css/main.css">
+</head>
+
+<body>
+   <div id="map"></div>
+   <script src="static/js/leaflet.js"></script>
+   <script src="static/js/leaflet.markercluster.js"></script>
+   <script>
+      var markers = L.markerClusterGroup();
+      var osm = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+         maxZoom: 16,
+         minZoom: 11,
+         attribution: '',
+      });
+      osm.on("load", function () {
+         //todo
+      });
+      var map = L.map('map', {
+         center: L.latLng(35.728632952609, 51.457663960755),
+         zoom: 11,
+         layers: [osm],
+      });
+
+      map.on("load", function () {
+         //todo
+      });
+
+      var icon = L.Icon.extend({
+         options: {},
+         initialize: function (options) {
+            options = L.Util.setOptions(this, options);
+         },
+         createIcon: function () {
+            var div = document.createElement('div');
+            div.innerHTML =
+               '<div class="shadow-lg bg-white text-center" style="border-radius: 100%; padding: 5px;"><img width="35" src="' +
+               this.options.iconUrl + '"></div>';
+            return div;
+         },
+      })
+
+      function main() {
+         fetch("static/data.json").then(function (response) {
+            return response.json();
+         }).then(function (companies) {
+            companies.forEach(function (company) {
+               if (company.Map == "") {
+                  return;
+               }
+               company.Jobs.forEach(function (job) {
+                  let lanlang = company.Map.split(",")
+                  var popup = "";
+                  var marker = L.marker(L.latLng(lanlang[0], lanlang[1]), {
+                     title: ""
+                  });
+                  popup = '<div class="card border-0" style="border-radius: 8px;">' +
+                     '<a href="' +
+                     job.URL +
+                     '" target="_blank" style="position: absolute; left: 0px; right: 0px; bottom: 0px; top: 0px;"></a><div class="card-body"> <div class="media"> <div> <img class="ml-3 mt-1" width="50" src="' +
+                     company.Logo +
+                     '"> </div> <div class="media-body"> <h6 class="mt-0"> <span style="color:#c93d31">' +
+                     job.Title +
+                     '</span></h6> <div class="card-text mb-2 mt-2" style="direction: rtl;"> <small class="text-muted">' +
+                     company.Title +
+                     '</small> </div> <div class="card-text"> <small class="text-muted">' +
+                     company.Location +
+                     '</small></div> </div> </div> </div></div>';
+
+                  marker.bindPopup(popup);
+                  marker.setIcon(L.icon({
+                     iconUrl: company.Logo,
+                     iconSize: [30, 30]
+                  }));
+                  marker.on("click", function (m) {
+                     this.openPopup();
+                  });
+                  markers.addLayer(marker);
+               });
+            });
+            map.addLayer(markers);
+         });
+      }
+      document.addEventListener('DOMContentLoaded', main, false);
+   </script>
+</body>
+
+</html>
