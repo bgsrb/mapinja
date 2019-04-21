@@ -17,18 +17,23 @@
    <script src="static/js/leaflet.js"></script>
    <script src="static/js/leaflet.markercluster.js"></script>
    <script>
-      var markers = L.markerClusterGroup();
+      var markers = L.markerClusterGroup({
+         //maxClusterRadius: function(zoom) { return 1; },
+         // iconCreateFunction: function(cluster) {
+		   //    return L.divIcon({ html: '<b>' + cluster.getChildCount() + '</b>' });
+	      // }
+      });
       var osm = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
-         maxZoom: 16,
-         minZoom: 11,
+         maxZoom: 14,
+         minZoom: 12,
          attribution: '',
       });
       osm.on("load", function () {
          //todo
       });
       var map = L.map('map', {
-         center: L.latLng(35.728632952609, 51.457663960755),
-         zoom: 11,
+         center: L.latLng(35.7352747,51.389304,12),
+         zoom: 12,
          layers: [osm],
       });
 
